@@ -1,0 +1,153 @@
+type CanisterMetaData = record {
+  controllers : vec principal;
+  canister_ids : vec record { nat8; principal };
+  active_post_canister : principal;
+  all_post_canisters : vec principal;
+  payment_recipient : principal;
+  membership_plans : vec record { Membership; nat };
+};
+type CaptchaSolution = record {
+  data : text;
+  created_at : nat64;
+  created_by : principal;
+};
+type Challange = record { base64_img : text };
+type Collection = record { post_id : nat; asset_canister : principal };
+type CommentNotificationArgs = record {
+  post_id : nat;
+  comment_content : text;
+  post_owner : principal;
+  post_brief : opt text;
+};
+type DexFansCanisterInitArgs = record {
+  controllers : vec principal;
+  canister_ids : vec record { text; principal };
+  active_post_canister : principal;
+  payment_recipient : principal;
+  membership_plans : vec record { Membership; nat };
+};
+type ICAddPostCanisterProfile = record {
+  caller : principal;
+  post_canister : principal;
+};
+type LikeNotificationArgs = record {
+  post_id : nat;
+  post_owner : principal;
+  post_brief : text;
+};
+type Membership = variant { Diamond; Guest };
+type NotificationBody = record {
+  by : opt UserDetailsMinified;
+  post_id : opt nat;
+  comment_content : opt text;
+  created_on : nat64;
+  category : NotificationType;
+  expiring_on : nat64;
+  post_brief : opt text;
+};
+type NotificationType = variant {
+  NewComment;
+  NewLike;
+  NewPost;
+  NewSubscribingPost;
+  NewSubscriber;
+};
+type PurchaseMediaBody = record { post_id : text; ledger_block : nat };
+type PurchasePostBody = record { post_id : nat; ledger_block : nat };
+type Result = variant { Ok; Err : text };
+type Result_1 = variant { Ok : principal; Err : text };
+type Result_2 = variant { Ok : text; Err : text };
+type Result_3 = variant { Ok : Challange; Err : text };
+type Result_4 = variant { Ok : vec Collection; Err : text };
+type Result_5 = variant { Ok : UserProfile; Err : text };
+type Result_6 = variant { Ok : UserProfileLittleMinified; Err : text };
+type Result_7 = variant { Ok : UserDetailsMinified; Err : text };
+type Result_8 = variant { Ok : CanisterMetaData; Err : text };
+type Result_9 = variant { Ok : vec principal; Err : text };
+type UserDetailsMinified = record {
+  username : text;
+  cover : opt text;
+  user_id : principal;
+  avatar : opt text;
+};
+type UserInputArgs = record {
+  bio : opt text;
+  username : text;
+  cover_image : opt text;
+  captcha_solution : text;
+  avatar : opt text;
+};
+type UserProfile = record {
+  bio : opt text;
+  token_amount : nat;
+  username : text;
+  asset_canister_id : principal;
+  cover_image : opt text;
+  membership_ledger_block : vec nat;
+  membership_till : nat64;
+  created_at : nat64;
+  user_id : principal;
+  is_bot : bool;
+  likes : vec nat;
+  active_post_canister : principal;
+  subscribers : vec principal;
+  subscribing : vec principal;
+  membership : Membership;
+  collects : vec Collection;
+  all_post_canisters : vec principal;
+  avatar : opt text;
+};
+type UserProfileLittleMinified = record {
+  bio : opt text;
+  token_amount : nat;
+  username : text;
+  asset_canister_id : principal;
+  cover_image : opt text;
+  created_at : nat64;
+  user_id : principal;
+  active_post_canister : principal;
+  subscribers : vec principal;
+  subscribing : vec principal;
+  membership : Membership;
+  all_post_canisters : vec principal;
+  avatar : opt text;
+};
+service : (DexFansCanisterInitArgs) -> {
+  admin_add_controller : (principal) -> (Result);
+  admin_profile_post_canister : (ICAddPostCanisterProfile) -> (Result);
+  admin_remove_controller : (principal) -> (Result);
+  admin_set_post_canister : (principal) -> (Result_1);
+  api_add_to_collection : (Collection) -> (Result);
+  api_create_account : (UserInputArgs) -> (Result_2);
+  api_create_captcha : () -> (Result_3);
+  api_get_my_collection : () -> (Result_4) query;
+  api_get_my_profile : () -> (Result_5) query;
+  api_get_notifications : () -> (vec NotificationBody) query;
+  api_get_purchased_media_ids : () -> (vec PurchaseMediaBody) query;
+  api_get_purchased_posts_ids : () -> (vec PurchasePostBody) query;
+  api_get_subscribed : () -> (vec UserDetailsMinified) query;
+  api_get_subscribers : () -> (vec UserDetailsMinified) query;
+  api_get_suggested_user : () -> (vec UserDetailsMinified) query;
+  api_get_user_details : (principal) -> (Result_6) query;
+  api_get_user_minified : (principal) -> (Result_7) query;
+  api_purchase_media : (nat, text, principal) -> (Result);
+  api_purchase_membership : (Membership) -> (Result);
+  api_purchase_post : (nat, principal) -> (Result);
+  api_search_user : (text) -> (vec UserDetailsMinified) query;
+  api_subscribe_account : (principal) -> (Result);
+  api_unsubscribe_account : (principal) -> (Result);
+  api_update_profile : (UserInputArgs) -> (Result);
+  api_update_user_likes : (principal, nat, bool) -> (Result);
+  create_post_canister : () -> (Result_1);
+  debug_get_all_captchas : () -> (vec CaptchaSolution) query;
+  get_asset_canister : () -> (Result_1) query;
+  get_canister_meta_data : () -> (Result_8) query;
+  get_ledger_canister : () -> (Result_1) query;
+  get_post_canister : () -> (Result_1) query;
+  greet : (text) -> (text) query;
+  ic_get_subscribed_list : (principal) -> (Result_9) query;
+  notify_comments : (CommentNotificationArgs) -> (Result);
+  notify_likes : (LikeNotificationArgs) -> (Result);
+  notify_new_subscriber : (principal) -> (Result);
+  notify_subscribers_newpost : (opt text, nat) -> (Result);
+}

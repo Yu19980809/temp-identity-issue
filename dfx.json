@@ -1,0 +1,19 @@
+{
+  "canisters": {
+    "app": {
+      "frontend": {
+        "entrypoint": "dist/index.html"
+      },
+      "source": ["dist"],
+      "type": "assets"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "output_env_file": ".env.local",
+  "version": 1
+}
